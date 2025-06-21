@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Livro - Livronline</title>
+    <link rel="stylesheet" href="./livros.css">
+</head>
+<body>
+
+<header>
+    <img src="../assets/icons/logo.svg" alt="Logo da Livraria" class="logo">
+    <nav>
+        <a href="../index.html" class="btn">Página Inicial</a>
+        <a href="../livros/livros.html" class="btn">Cadastro de Livros</a>
+        <a href="../clientes/clientes.html" class="btn">Cadastro de Clientes</a>
+        <a href="../carrinho/carrinho.html" class="btn carrinho">
+            <img src="../assets/icons/cart.svg" alt="Carrinho">
+        </a>
+    </nav>
+</header>
+
+<main>
+    <h1>Cadastro de livro</h1>
+
+    <form id="formLivro">
+        <div class="codigo">
+            <input type="text" id="codigo" placeholder="Código">
+            <button type="button" id="btnBuscar" class="btnBuscar">
+                <img src="../assets/icons/search.svg" alt="Buscar" class="icon">
+            </button>
+        </div>
+
+        <input type="text" id="nome" placeholder="Nome" required>
+        <input type="text" id="autor" placeholder="Autor" required>
+        <input type="text" id="edicao" placeholder="Edição" required>
+        <input type="number" id="preco" placeholder="Preço" step="0.01" required>
+
+        <div class="botoes">
+            <button type="submit" class="verde">Cadastrar</button>
+            <button type="button" id="btnEditar" class="laranja">Editar</button>
+            <button type="button" id="btnExcluir" class="vermelho">Excluir</button>
+        </div>
+    </form>
+
+    <h2>Lista de Livros</h2>
+    <ul id="listaLivros"></ul>
+</main>
+
+<script>
+    const form = document.getElementById('formLivro');
+    const lista = document.getElementById('listaLivros');
+
+    const inputCodigo = document.getElementById('codigo');
+    const inputNome = document.getElementById('nome');
+    const inputAutor = document.getElementById('autor');
+    const inputEdicao = document.getElementById('edicao');
+    const inputPreco = document.getElementById('preco');
+
+    const btnBuscar = document.getElementById('btnBuscar');
+    const btnEditar = document.getElementById('btnEditar');
+    const btnExcluir = document.getElementById('btnExcluir');
+
+    function limparCampos() {
+        inputCodigo.value = '';
+        inputNome.value = '';
+        inputAutor.value = '';
+        inputEdicao.value = '';
+        inputPreco.value = '';
+    }
+
+    // Cadastrar livro
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const livro = {
+            nome: inputNome.value,
+            autor: inputAutor.value,
+            edicao: inputEdicao.value,
+            preco: parseFloat(inputPreco.value)
+        };
+
+        const resp = await fetch('/api/livros', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(livro)
+        });
+
+        if (resp.ok) {
+            alert('Livro cadastrado com sucesso!');
+            limparCampos();
+            carregarLivros();
+        } else {
+            const msg = await resp.text();
+            alert('Erro: ' + msg);
+        }
+    });
+
+    // Buscar livro
+    btnBuscar.addEventListener('click', async () => {
+        const codigo = inputCodigo.value.trim();
+        if (!codigo) {
+            alert('Informe o código do livro.');
+            return;
+        }
+
+        const resp = await fetch(`/api/livros/${codigo}`);
+        if (resp.ok) {
+            const l = await resp.json();
+            inputNome.value = l.nome;
+            inputAutor.value = l.autor;
+            inputEdicao.value = l.edicao;
+            inputPreco.value = l.preco;
+        } else {
+            alert('Livro não encontrado!');
+            limparCampos();
+        }
+    });
+
+    //  Editar livro
+    btnEditar.addEventListener('click', async () => {
+        const codigo = inputCodigo.value.trim();
+        if (!codigo) {
+            alert('Informe o código para editar.');
+            return;
+        }
+
+        const livro = {
+            nome: inputNome.value,
+            autor: inputAutor.value,
+            edicao: inputEdicao.value,
+            preco: parseFloat(inputPreco.value)
+        };
+
+        await fetch(`/api/livros/${codigo}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(livro)
+        });
+
+        alert('Livro atualizado com sucesso!');
+        limparCampos();
+        carregarLivros();
+    });
+
+    // Excluir livro
+    btnExcluir.addEventListener('click', async () => {
+        const codigo = inputCodigo.value.trim();
+        if (!codigo) {
+            alert('Informe o código para excluir.');
+            return;
+        }
+
+        const confirmacao = confirm('Tem certeza que deseja excluir este livro?');
+        if (!confirmacao) return;
+
+        await fetch(`/api/livros/${codigo}`, { method: 'DELETE' });
+
+        alert('Livro excluído com sucesso!');
+        limparCampos();
+        carregarLivros();
+    });
+
+    // Carregar lista de livros
+    async function carregarLivros() {
+        const resp = await fetch('/api/livros');
+        const livros = await resp.json();
+        lista.innerHTML = '';
+        livros.forEach(l => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                Código: ${l.codigo} | ${l.nome} (${l.autor}, ${l.edicao}) - R$ ${l.preco.toFixed(2)} 
+                <button onclick="deletarLivro(${l.codigo})">Excluir</button>
+            `;
+            lista.appendChild(li);
+        });
+    }
+
+    // Excluir diretamente da lista
+    async function deletarLivro(codigo) {
+        await fetch(`/api/livros/${codigo}`, { method: 'DELETE' });
+        carregarLivros();
+    }
+
+    // Carregar livros na inicialização
+    carregarLivros();
+</script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Livronline</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<header>
+    <img src="./assets/icons/logo.svg" alt="Logo da Livraria" class="logo">
+    <nav>
+        <a href="./livros/livros.html" class="btn">Cadastro de Livros</a>
+        <a href="./clientes/clientes.html" class="btn">Cadastro de Clientes</a>
+        <a href="./carrinho/carrinho.html" class="btn carrinho">
+            <img src="./assets/icons/cart.svg" alt="Carrinho">
+        </a>
+    </nav>
+</header>
+
+<main>
+    <section class="cliente">
+        <label>Cliente</label>
+        <input type="text" id="codigoCliente" placeholder="CÓDIGO">
+        <button id="btnBuscar" class="btnBuscar">
+            <img src="./assets/icons/search.svg" alt="Buscar" width="16">
+        </button>
+        <input type="text" id="nomeCliente" placeholder="NOME" readonly>
+    </section>
+
+    <div class="container-livros" id="listaLivros">
+        <!-- Lista de livros gerada via JavaScript -->
+    </div>
+</main>
+
+<script>
+    const listaLivros = document.getElementById('listaLivros');
+    const inputCodigo = document.getElementById('codigoCliente');
+    const inputNome = document.getElementById('nomeCliente');
+    const btnBuscar = document.getElementById('btnBuscar');
+
+    let clienteSelecionado = null;
+
+    //Buscar cliente
+    btnBuscar.addEventListener('click', async () => {
+        const codigo = inputCodigo.value.trim();
+        if (!codigo) {
+            alert('Informe o código do cliente.');
+            return;
+        }
+
+        const resp = await fetch(`/api/clientes/${codigo}`);
+        if (resp.ok) {
+            const cliente = await resp.json();
+            inputNome.value = cliente.nome;
+            clienteSelecionado = cliente;
+            localStorage.setItem('clienteSelecionado', JSON.stringify(cliente));
+        } else {
+            alert('Cliente não encontrado!');
+            inputNome.value = '';
+            clienteSelecionado = null;
+            localStorage.removeItem('clienteSelecionado');
+        }
+    });
+
+    //Carregar livros da API
+    async function carregarLivros() {
+        const res = await fetch('/api/livros');
+        const livros = await res.json();
+        listaLivros.innerHTML = '';
+
+        livros.forEach(livro => {
+            const card = document.createElement('div');
+            card.className = 'card-livro';
+
+            card.innerHTML = `
+                <img src="./assets/images/book.png" alt="Livro">
+                <input type="text" value="${livro.nome}" readonly>
+                <input type="text" value="${livro.autor}" readonly>
+                <input type="text" value="Edição: ${livro.edicao}" readonly>
+                <input type="text" value="R$ ${parseFloat(livro.preco).toFixed(2)}" readonly>
+                <button class="btn-inserir" onclick="adicionarAoCarrinho(
+                    ${livro.codigo}, 
+                    '${livro.nome}', 
+                    '${livro.autor}', 
+                    '${livro.edicao}', 
+                    ${livro.preco}
+                )">
+                    INSERIR <img src="./assets/icons/cart.svg" width="16">
+                </button>
+            `;
+
+            listaLivros.appendChild(card);
+        });
+    }
+
+    //Adicionar livro ao carrinho
+    function adicionarAoCarrinho(codigoLivro, nome, autor, edicao, preco) {
+        const cliente = JSON.parse(localStorage.getItem('clienteSelecionado'));
+
+        if (!cliente) {
+            alert('Selecione um cliente antes de adicionar livros.');
+            return;
+        }
+
+        let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+
+        const existe = carrinho.find(item => item.codigoLivro === codigoLivro);
+        if (existe) {
+            existe.quantidade += 1;
+        } else {
+            carrinho.push({
+                codigoLivro,
+                nome,
+                autor,
+                edicao,
+                preco,
+                quantidade: 1
+            });
+        }
+
+        localStorage.setItem('carrinho', JSON.stringify(carrinho));
+        alert('Livro adicionado ao carrinho!');
+    }
+
+    carregarLivros();
+
+</script>
+</body>
+</html>

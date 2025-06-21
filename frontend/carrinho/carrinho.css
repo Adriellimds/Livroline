@@ -1,0 +1,215 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #4f7d7f;
+}
+
+header {
+    background-color: #2c4b4c;
+    padding: 15px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header .logo {
+    height: 60px;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+nav .btn {
+    background-color: #b36b6b;
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border: 1px solid #7d4d4d;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+    font-weight: bold;
+}
+
+nav .btn:hover {
+    background-color: #944d4d;
+}
+
+nav .carrinho {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+}
+
+nav .carrinho img {
+    width: 24px;
+    height: 24px;
+}
+
+/* Main */
+main {
+    padding: 40px;
+    color: white;
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: white;
+    font-size: 32px;
+}
+
+section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 500px;
+}
+
+
+
+.codigo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.codigo input {
+    flex: 1;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.btnBuscar {
+    background-color: #8db974;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btnBuscar:hover {
+    background-color: #6b9d50;
+}
+
+input, select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+.botoes {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.botoes button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.verde {
+    background-color: #8db974;
+}
+
+.verde:hover {
+    background-color: #6b9d50;
+}
+
+.laranja {
+    background-color: #d6a46a;
+}
+
+.laranja:hover {
+    background-color: #bb8a4f;
+}
+
+.vermelho {
+    background-color: #b36b6b;
+}
+
+.vermelho:hover {
+    background-color: #944d4d;
+}
+
+h2 {
+    margin-top: 40px;
+    margin-bottom: 10px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 8px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+}
+
+li button {
+    margin-left: 10px;
+    background-color: red;
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+}
+
+li button:hover {
+    background-color: darkred;
+}
+
+.item-carrinho {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.item-carrinho input {
+    width: 120px;
+    padding: 4px;
+}
+
+.item-carrinho input[type="number"] {
+    width: 50px;
+}
+
+.item-carrinho button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.item-carrinho button:hover {
+    background-color: darkred;
+}
+
